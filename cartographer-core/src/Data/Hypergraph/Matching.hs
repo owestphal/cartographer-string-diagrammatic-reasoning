@@ -42,7 +42,7 @@ matchAll pattern context = observeAll $ match pattern context
 -- NOTE: it seems about 500x faster in certain cases to just use list, and
 -- avoid the 'choice' function. Not sure why this is,
 match
-  :: (Eq a, MonadLogic f)
+  :: (Eq a, MonadLogic f, MonadPlus f)
   => OpenHypergraph a -> OpenHypergraph a -> f (Matching a)
 match pattern context
   | Hypergraph.null pattern = pure empty -- empty pattern => empty matching
@@ -54,7 +54,7 @@ match pattern context
 -- First proposes possible matches (candidates), then checks the match would be
 -- consistent, then updates the matching.
 matchWire
-  :: (Eq a, MonadLogic f)
+  :: (Eq a, MonadLogic f, MonadPlus f)
   => OpenHypergraph a
   -> OpenHypergraph a
   -> Matching a -> Wire Open -> f (Matching a)
@@ -88,7 +88,7 @@ matchPorts (Port (Gen a) _) (Port (Gen b) _) m =
 -- We try to exploit the "determined structure" of the hypergraph, by
 -- checking if either of the source/target hyperedges is already matched.
 candidates
-  :: (Eq a, MonadLogic f)
+  :: (Eq a, MonadLogic f, MonadPlus f)
   => OpenHypergraph a
   -> OpenHypergraph a
   -> Matching a -> Wire Open -> f (Wire Open)
@@ -126,7 +126,7 @@ determined pattern context m w@(s, t) =
 -- TODO: use an index here. We can index by the "portsMatch" condition- see
 -- wiki.
 undetermined
-  :: (Eq a, MonadLogic f)
+  :: (Eq a, MonadLogic f, MonadPlus f)
   => OpenHypergraph a
   -> OpenHypergraph a
   -> Matching a

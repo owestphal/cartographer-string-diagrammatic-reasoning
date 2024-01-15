@@ -238,7 +238,7 @@ matchCandidates (Port (Gen e) i) = do
 -- | A single step of matching: given a single port in the pattern,
 -- find the wire it is part of, and match it to one in the graph.
 -- If the port is already matched, this does nothing.
-matchStep :: (Eq sig, MonadMatch sig m) => Port Source Open -> m ()
+matchStep :: (Eq sig, MonadMatch sig m, MonadPlus m) => Port Source Open -> m ()
 matchStep ps = do
   pt <- toTarget ps . _matchEnvPattern <$> ask
 
@@ -259,7 +259,7 @@ toTarget src = maybe onErr id . Bimap.lookup src . connections
     onErr = error $ "cannot match unconnected port " ++ show src
 
 matchAll
-  :: (Eq sig, MonadMatch sig m)
+  :: (Eq sig, MonadMatch sig m, MonadPlus m)
   => [Port Source Open]
   -> m ()
 matchAll = void . mapM matchStep
